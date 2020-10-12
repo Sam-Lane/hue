@@ -9,7 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func LightsTurn(c *cli.Context, b *huego.Bridge) error {
+func LightsToggle(c *cli.Context, b *huego.Bridge) error {
 	lightID, err := strconv.Atoi(c.Args().First())
 	if err != nil {
 		return fmt.Errorf(c.Args().First(), "is not a valid light id")
@@ -18,20 +18,17 @@ func LightsTurn(c *cli.Context, b *huego.Bridge) error {
 	if err != nil {
 		return err
 	}
-	state := c.Args().Slice()[1]
-	if state == "on" {
+	if !currentState.State.On {
 		fmt.Println("💡 turning on light")
-		currentState.State.On = true
+		currentState.State.On = !currentState.State.On
 		b.SetLightState(lightID, *currentState.State)
 		return nil
-	}
-	if state == "off" {
+	} else {
 		fmt.Println("💀 turning off light")
-		currentState.State.On = false
+		currentState.State.On = !currentState.State.On
 		b.SetLightState(lightID, *currentState.State)
 		return nil
 	}
-	return fmt.Errorf(state, "is not a valid command. Use on/off")
 }
 
 func LightsGet(c *cli.Context, b *huego.Bridge) error {
@@ -65,6 +62,7 @@ func printLight(c *cli.Context, l *huego.Light) {
 		}
 		fmt.Println(string(b))
 	} else {
-		fmt.Println(l.Name, l.State.On, l.ID)
+		lString := fmt.Sprintf("%s\n\t%d\n\t%t", l.Name, l.ID, l.State.On)
+		fmt.Println(lString)
 	}
 }

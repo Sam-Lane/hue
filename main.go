@@ -40,10 +40,10 @@ func main() {
 			Usage:   "Control philips hue lights",
 			Subcommands: []*cli.Command{
 				{
-					Name:  "turn",
-					Usage: "turn on light(s)",
+					Name:  "toggle",
+					Usage: "toggle on state of light(s)",
 					Action: func(c *cli.Context) error {
-						return commands.LightsTurn(c, bridge)
+						return commands.LightsToggle(c, bridge)
 					},
 				},
 				{
