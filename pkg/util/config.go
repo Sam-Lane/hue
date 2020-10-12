@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/user"
@@ -25,19 +26,39 @@ func ReadConfig() *HueConfig {
 		}
 	}
 	//If not proceed to read .hue file from their home directory
-
-	usr, err := user.Current()
-	if err != nil {
-		panic(err)
-	}
-	configFilePath := filepath.Join(usr.HomeDir, ".hue")
-
+	configFilePath := getConfigPath()
 	content, err := ioutil.ReadFile(configFilePath)
 	if err != nil {
 		panic(err)
 	}
-	hueUser = strings.TrimSpace(string(content))
-	return &HueConfig{
-		Username: hueUser,
+	confs := strings.Split(string(content), "\n")
+	if len(confs) == 1 {
+		fmt.Println(confs)
+		return &HueConfig{
+			Username: hueUser,
+		}
 	}
+	if len(confs) == 2 {
+		return &HueConfig{
+			Username:  confs[0],
+			IPAddress: confs[1],
+		}
+	}
+	return nil
+}
+
+func SaveConfig(conf *HueConfig) {
+	b := []byte(fmt.Sprintf("%s\n%s", conf.Username, conf.IPAddress))
+	err := ioutil.WriteFile(getConfigPath(), b, 0600)
+	if err != nil {
+		panic("failed to write config to ~/.hue")
+	}
+}
+
+func getConfigPath() string {
+	usr, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+	return filepath.Join(usr.HomeDir, ".hue")
 }

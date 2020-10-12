@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/sam-lane/hue/pkg/commands"
@@ -98,6 +99,8 @@ func setUpBridge(conf util.HueConfig) (*huego.Bridge, error) {
 			return nil, err
 		}
 		bridge.Login(conf.Username)
+		conf.IPAddress = bridge.Host
+		util.SaveConfig(&conf)
 		return bridge, nil
 	}
 	bridge := huego.New(conf.IPAddress, conf.Username)
