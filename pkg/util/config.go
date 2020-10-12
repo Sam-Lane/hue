@@ -31,14 +31,17 @@ func ReadConfig() *HueConfig {
 	if err != nil {
 		panic(err)
 	}
-	confs := strings.Split(string(content), "\n")
-	if len(confs) == 1 {
-		fmt.Println(confs)
+	confs := strings.Split(strings.Trim(strings.TrimSpace(string(content)), "\n"), "\n")
+	if(confs == nil) {
+		panic("Error splitting string")
+	}
+	configLen := len(confs)
+	if configLen == 1 {
 		return &HueConfig{
 			Username: hueUser,
 		}
 	}
-	if len(confs) == 2 {
+	if configLen == 2 {
 		return &HueConfig{
 			Username:  confs[0],
 			IPAddress: confs[1],
